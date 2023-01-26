@@ -1,5 +1,5 @@
 html {
-  background-color: #aFaFaF;
+  background-color: #afafaf;
   min-height: 100vh;
   min-width: 100vw;
 }
@@ -28,7 +28,8 @@ html {
   margin-left: 2vw !important;
 }
 
-th, td {
+th,
+td {
   /* border: 1px solid black; */
   height: 20vh;
   width: 20vh;

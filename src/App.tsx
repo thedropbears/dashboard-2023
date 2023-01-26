@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import "./App.css";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { NetworkTables, NetworkTableTypeInfos } from 'ntcore-ts-client';
+import { NetworkTables, NetworkTableTypeInfos } from "ntcore-ts-client";
 
 type cubeOrCone = "Cube" | "Cone" | "None";
 
 function useNTInstance(portOrURI: number | string) {
-  return (typeof portOrURI === "number") ? NetworkTables.createInstanceByTeam(4774, portOrURI) : NetworkTables.createInstanceByURI(portOrURI);
+  return typeof portOrURI === "number"
+    ? NetworkTables.createInstanceByTeam(4774, portOrURI)
+    : NetworkTables.createInstanceByURI(portOrURI);
 }
 
 function ConeOrCube(...props: any): JSX.Element {
@@ -52,7 +54,7 @@ function Table(...props: any) {
                     variant="contained"
                     className="gridButton"
                     style={{
-                      backgroundColor: item ? "green" : "red"  
+                      backgroundColor: item ? "green" : "red",
                     }}
                   >
                     {item ? "o" : "x"}
@@ -68,18 +70,17 @@ function Table(...props: any) {
 }
 
 function splitArray(array: any[], times: number) {
+  const result = array.reduce((resultArray, item, index) => {
+    const chunkIndex = Math.floor(index / times);
 
-  const result = array.reduce((resultArray, item, index) => { 
-    const chunkIndex = Math.floor(index/times)
-
-    if(!resultArray[chunkIndex]) {
-      resultArray[chunkIndex] = [] // start a new chunk
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = []; // start a new chunk
     }
 
-    resultArray[chunkIndex].push(item)
+    resultArray[chunkIndex].push(item);
 
-    return resultArray
-  }, [])
+    return resultArray;
+  }, []);
 
   return result;
 }
@@ -99,19 +100,29 @@ function App() {
     1: cone
     2: cube
    */
-  const pickupTopic = instance.createTopic<number>('PickupObject', NetworkTableTypeInfos.kInteger, 0);
-  const  nodesTopic = instance.createTopic<boolean[]>('NodeObject', NetworkTableTypeInfos.kBooleanArray, Array(27).fill(false));
+  const pickupTopic = instance.createTopic<number>(
+    "PickupObject",
+    NetworkTableTypeInfos.kInteger,
+    0
+  );
+  const nodesTopic = instance.createTopic<boolean[]>(
+    "NodeObject",
+    NetworkTableTypeInfos.kBooleanArray,
+    Array(27).fill(false)
+  );
 
   function handleCheck(e: any) {
     setPiece(e.target.value);
   }
 
   pickupTopic.subscribe((value: number | null) => {
-    const toType: cubeOrCone = ({
-      0: "None",
-      1: "Cone",
-      2: "Cube"
-    } as { [key: number]: cubeOrCone })[value || 0]
+    const toType: cubeOrCone = (
+      {
+        0: "None",
+        1: "Cone",
+        2: "Cube",
+      } as { [key: number]: cubeOrCone }
+    )[value || 0];
 
     // Don't update the DOM if the value hasn't changed
     if (toType !== piece) {
@@ -120,8 +131,8 @@ function App() {
   }, false);
 
   nodesTopic.subscribe((value: boolean[] | null) => {
-    const splitted = splitArray((value || []), 9);
-    if (splitted !== table) { 
+    const splitted = splitArray(value || [], 9);
+    if (splitted !== table) {
       setPiece(splitted);
     }
   }, false);
@@ -170,7 +181,7 @@ function App() {
             </Stack>
           </form>
         </div>
-        <Table table={table} setTable={setTable}/>
+        <Table table={table} setTable={setTable} />
       </Stack>
     </div>
   );
