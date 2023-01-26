@@ -46,7 +46,7 @@ function Table(...props: any) {
             {table[row].map(function (item, key) {
               return (
                 <td key={key}>
-                  <p style={{ fontSize: '12px' }}>Node ID #{row * 9 + key}</p>
+                  <p style={{ fontSize: "12px" }}>Node ID #{row * 9 + key}</p>
                   <Button
                     onClick={() => {
                       handleButtonClick(key, row);
