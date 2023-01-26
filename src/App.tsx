@@ -38,12 +38,12 @@ function Table(...props: any) {
 
   return (
     <table className="table">
-      {[0, 1, 2].map(function (unused, row) {
+      {[0, 1, 2].map(function (key, row) {
         return (
-          <tr>
+          <tr key={key}>
             {table[row].map(function (item, key) {
               return (
-                <td>
+                <td key={key}>
                   <p style={{ fontSize: '12px' }}>Node ID #{row * 9 + key}</p>
                   <Button
                     onClick={() => {
