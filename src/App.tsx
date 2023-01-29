@@ -42,31 +42,33 @@ function Table(props: {
 
   return (
     <table className="table">
-      {[0, 1, 2].map(function (key, row) {
-        return (
-          <tr key={key}>
-            {table[row].map(function (item, key) {
-              return (
-                <td key={key}>
-                  <p style={{ fontSize: "12px" }}>Node ID #{row * 9 + key}</p>
-                  <Button
-                    onClick={() => {
-                      handleButtonClick(key, row);
-                    }}
-                    variant="contained"
-                    className="gridButton"
-                    style={{
-                      backgroundColor: item ? "green" : "red",
-                    }}
-                  >
-                    {item ? "o" : "x"}
-                  </Button>
-                </td>
-              );
-            })}
-          </tr>
-        );
-      })}
+      <tbody>
+        {[0, 1, 2].map(function (key, row) {
+          return (
+            <tr key={key}>
+              {table[row].map(function (item, key) {
+                return (
+                  <td key={key}>
+                    <p style={{ fontSize: "12px" }}>Node ID #{row * 9 + key}</p>
+                    <Button
+                      onClick={() => {
+                        handleButtonClick(key, row);
+                      }}
+                      variant="contained"
+                      className="gridButton"
+                      style={{
+                        backgroundColor: item ? "green" : "red",
+                      }}
+                    >
+                      {item ? "o" : "x"}
+                    </Button>
+                  </td>
+                );
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
     </table>
   );
 }
