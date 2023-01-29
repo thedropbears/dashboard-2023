@@ -15,8 +15,6 @@ test("Clicking on an option changes the displayed piece", () => {
 
   const radio = screen.getAllByRole("radio");
 
-  console.log(radio);
-
   act(() => {
     radio[0].click();
   });

@@ -55,7 +55,6 @@ function Table(props: {
                       onClick={() => {
                         handleButtonClick(key, row);
                       }}
-                      type="button"
                       variant="contained"
                       className="gridButton"
                       style={{
