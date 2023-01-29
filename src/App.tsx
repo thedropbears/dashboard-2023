@@ -12,8 +12,8 @@ function useNTInstance(portOrURI: number | string) {
     : NetworkTables.createInstanceByURI(portOrURI);
 }
 
-function ConeOrCube(...props: any): JSX.Element {
-  const piece: cubeOrCone = props[0].piece;
+function ConeOrCube(props: { piece: cubeOrCone }): JSX.Element {
+  const { piece } = props;
 
   return (
     <div
@@ -28,9 +28,11 @@ function ConeOrCube(...props: any): JSX.Element {
   );
 }
 
-function Table(...props: any) {
-  const table: boolean[][] = props[0].table;
-  const setTable: any = props[0].setTable;
+function Table(props: {
+  table: boolean[][];
+  setTable: (table: boolean[][]) => void;
+}) {
+  const { table, setTable } = props;
 
   function handleButtonClick(column: number, row: number) {
     const tableClone = [...table];
@@ -69,8 +71,8 @@ function Table(...props: any) {
   );
 }
 
-function splitArray(array: any[], times: number) {
-  const result = array.reduce((resultArray, item, index) => {
+function splitArray<T>(array: T[], times: number) {
+  const result = array.reduce<T[][]>((resultArray, item, index) => {
     const chunkIndex = Math.floor(index / times);
 
     if (!resultArray[chunkIndex]) {
@@ -111,21 +113,23 @@ function App() {
     Array(27).fill(false)
   );
 
-  function handleCheck(e: any) {
+  function handleCheck(
+    e: React.ChangeEvent<HTMLInputElement & { value: cubeOrCone }>
+  ) {
     setPiece(e.target.value);
   }
 
   pickupTopic.subscribe((value: number | null) => {
-    const toType: cubeOrCone = (
+    const toType = (
       {
         0: "None",
         1: "Cone",
         2: "Cube",
-      } as { [key: number]: cubeOrCone }
+      } as const
     )[value || 0];
 
     // Don't update the DOM if the value hasn't changed
-    if (toType !== piece) {
+    if (toType && toType !== piece) {
       setPiece(toType);
     }
   }, false);
@@ -133,7 +137,7 @@ function App() {
   nodesTopic.subscribe((value: boolean[] | null) => {
     const splitted = splitArray(value || [], 9);
     if (splitted !== table) {
-      setPiece(splitted);
+      setTable(splitted);
     }
   }, false);
 
@@ -143,7 +147,7 @@ function App() {
       <Stack direction="row" spacing={2}>
         <div>
           <ConeOrCube piece={piece} />
-          <form onSubmit={handleCheck}>
+          <form>
             <Stack direction="row">
               <div className="radio">
                 <label>
