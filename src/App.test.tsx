@@ -14,23 +14,29 @@ test("Clicking on an option changes the displayed piece", () => {
   const { container } = render(<App />);
 
   const radio = container.getElementsByTagName("label");
-  act(() => { radio[0].click(); });
+  act(() => {
+    radio[0].click();
+  });
   let pieceDisplay = container.getElementsByClassName("coneOrCube")[0];
   let style = getComputedStyle(pieceDisplay).backgroundColor;
 
   expect(style).toEqual("yellow");
 
-  act(() => { radio[1].click(); });
+  act(() => {
+    radio[1].click();
+  });
   pieceDisplay = container.getElementsByClassName("coneOrCube")[0];
   style = getComputedStyle(pieceDisplay).backgroundColor;
 
-  expect(style).toEqual("violet"); 
+  expect(style).toEqual("violet");
 
-  act(() => { radio[2].click(); });
+  act(() => {
+    radio[2].click();
+  });
   pieceDisplay = container.getElementsByClassName("coneOrCube")[0];
   style = getComputedStyle(pieceDisplay).backgroundColor;
 
-  expect(style).toEqual("grey"); 
+  expect(style).toEqual("grey");
 });
 
 test("Clicking on a node should change it", () => {
@@ -39,19 +45,18 @@ test("Clicking on a node should change it", () => {
   const table = container.getElementsByTagName("button");
 
   for (let i = 0; i < table.length; i++) {
-    
     const item = table[i];
 
     let style = getComputedStyle(item).backgroundColor;
 
-    console.log(item.children[1], item.children.length)
+    console.log(item.children[1], item.children.length);
 
     expect(style).toEqual("red");
 
     act(() => {
       item.click();
-    })
-    
+    });
+
     style = getComputedStyle(item).backgroundColor;
 
     expect(style).toEqual("green");
