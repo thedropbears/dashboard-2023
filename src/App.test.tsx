@@ -43,7 +43,7 @@ test("Clicking on an option changes the displayed piece", () => {
 test("Clicking on a node should change it", () => {
   render(<App />);
 
-  const table = screen.getAllByRole("btn");
+  const table = screen.getAllByRole("button");
 
   for (let i = 0; i < table.length; i++) {
     const item = table[i];
