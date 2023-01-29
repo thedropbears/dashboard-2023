@@ -18,6 +18,7 @@ function ConeOrCube(props: { piece: cubeOrCone }): JSX.Element {
   return (
     <div
       className="coneOrCube"
+      role="none"
       style={{
         backgroundColor:
           piece === "None" ? "grey" : piece === "Cube" ? "violet" : "yellow",
@@ -54,6 +55,7 @@ function Table(props: {
                       onClick={() => {
                         handleButtonClick(key, row);
                       }}
+                      role="btn"
                       variant="contained"
                       className="gridButton"
                       style={{

@@ -1,7 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import App from "./App";
-import Button from "@mui/material/Button";
 import { act } from "react-dom/test-utils";
 
 test("Renders", () => {
@@ -11,13 +10,17 @@ test("Renders", () => {
 });
 
 test("Clicking on an option changes the displayed piece", () => {
-  const { container } = render(<App />);
+  // const { container } = render(<App />);
+  render(<App />);
 
-  const radio = container.getElementsByTagName("label");
+  const radio = screen.getAllByRole('radio');
+
+  console.log(radio)
+
   act(() => {
     radio[0].click();
   });
-  let pieceDisplay = container.getElementsByClassName("coneOrCube")[0];
+  let pieceDisplay = screen.getByRole("none");
   let style = getComputedStyle(pieceDisplay).backgroundColor;
 
   expect(style).toEqual("yellow");
@@ -25,31 +28,27 @@ test("Clicking on an option changes the displayed piece", () => {
   act(() => {
     radio[1].click();
   });
-  pieceDisplay = container.getElementsByClassName("coneOrCube")[0];
+  pieceDisplay = screen.getByRole("none");
   style = getComputedStyle(pieceDisplay).backgroundColor;
-
   expect(style).toEqual("violet");
 
   act(() => {
     radio[2].click();
   });
-  pieceDisplay = container.getElementsByClassName("coneOrCube")[0];
+  pieceDisplay = screen.getByRole("none");
   style = getComputedStyle(pieceDisplay).backgroundColor;
-
   expect(style).toEqual("grey");
 });
 
 test("Clicking on a node should change it", () => {
-  const { container } = render(<App />);
+  render(<App />);
 
-  const table = container.getElementsByTagName("button");
+  const table = screen.getAllByRole("btn");
 
   for (let i = 0; i < table.length; i++) {
     const item = table[i];
 
     let style = getComputedStyle(item).backgroundColor;
-
-    console.log(item.children[1], item.children.length);
 
     expect(style).toEqual("red");
 
