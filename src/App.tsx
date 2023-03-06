@@ -1,16 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import { NetworkTables, NetworkTableTypeInfos } from "ntcore-ts-client";
+import { NetworkTablesTypeInfos } from "ntcore-ts-client";
+import { useNTValue } from "ntcore-react";
 
 type cubeOrCone = "Cube" | "Cone" | "None";
-
-function useNTInstance(portOrURI: number | string) {
-  return typeof portOrURI === "number"
-    ? NetworkTables.createInstanceByTeam(4774, portOrURI)
-    : NetworkTables.createInstanceByURI(portOrURI);
-}
 
 function ConeOrCube(props: { piece: cubeOrCone }): JSX.Element {
   const { piece } = props;
@@ -30,33 +25,26 @@ function ConeOrCube(props: { piece: cubeOrCone }): JSX.Element {
 
 function Table(props: {
   table: boolean[][];
-  setTable: (table: boolean[][]) => void;
+  bestNode: number;
 }) {
-  const { table, setTable } = props;
+  const { table, bestNode } = props;
 
-  function handleButtonClick(column: number, row: number) {
-    const tableClone = [...table];
-    tableClone[row][column] = !tableClone[row][column];
-    setTable(tableClone);
-  }
+  console.log(table)
 
   return (
     <table className="table">
-      {[0, 1, 2].map(function (key, row) {
+      {[0, 1, 2].map(function (_key, row) {
         return (
-          <tr key={key}>
+          <tr key={_key}>
             {table[row].map(function (item, key) {
               return (
                 <td key={key}>
                   <p style={{ fontSize: "12px" }}>Node ID #{row * 9 + key}</p>
                   <Button
-                    onClick={() => {
-                      handleButtonClick(key, row);
-                    }}
                     variant="contained"
                     className="gridButton"
                     style={{
-                      backgroundColor: item ? "green" : "red",
+                      backgroundColor: (row * 3 + key === bestNode) ? "violet" : item ? "red" : "green",
                     }}
                   >
                     {item ? "o" : "x"}
@@ -87,105 +75,47 @@ function splitArray<T>(array: T[], times: number) {
   return result;
 }
 
+function numberToCubeOrCone(x: number): cubeOrCone {
+  if (x === 1)
+    return "Cone"
+  if (x === 2)
+    return "Cube"
+  return "None"
+}
+
 function App() {
-  const [piece, setPiece] = useState<cubeOrCone>("None");
-  const [table, setTable] = useState<boolean[][]>([
-    [false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false],
-    [false, false, false, false, false, false, false, false, false],
-  ]);
+  const side = useNTValue<boolean>(
+    "/FMSInfo/IsRedAlliance",
+    NetworkTablesTypeInfos.kBoolean,
+    true
+  )
 
-  const instance = useNTInstance(5810);
+  const sidePath: string = "/components/score_game_piece/state_" + (side ? "red" : "blue")
 
-  /*
-    0: none
-    1: cone
-    2: cube
-   */
-  const pickupTopic = instance.createTopic<number>(
-    "PickupObject",
-    NetworkTableTypeInfos.kInteger,
+  const piece = useNTValue<number>(
+    "/components/gripper/get_current_piece_as_int",
+    NetworkTablesTypeInfos.kInteger,
     0
-  );
-  const nodesTopic = instance.createTopic<boolean[]>(
-    "NodeObject",
-    NetworkTableTypeInfos.kBooleanArray,
+  )
+  const table = useNTValue<boolean[]>(
+    sidePath,
+    NetworkTablesTypeInfos.kBooleanArray,
     Array(27).fill(false)
-  );
-
-  function handleCheck(
-    e: React.ChangeEvent<HTMLInputElement & { value: cubeOrCone }>
-  ) {
-    setPiece(e.target.value);
-  }
-
-  pickupTopic.subscribe((value: number | null) => {
-    const toType = (
-      {
-        0: "None",
-        1: "Cone",
-        2: "Cube",
-      } as const
-    )[value || 0];
-
-    // Don't update the DOM if the value hasn't changed
-    if (toType && toType !== piece) {
-      setPiece(toType);
-    }
-  }, false);
-
-  nodesTopic.subscribe((value: boolean[] | null) => {
-    const splitted = splitArray(value || [], 9);
-    if (splitted !== table) {
-      setTable(splitted);
-    }
-  }, false);
+  )
+  const bestNode = useNTValue<number>(
+    "/components/score_game_piece/pick_node_as_int",
+    NetworkTablesTypeInfos.kInteger,
+    -1
+  )
 
   return (
     <div className="App">
-      <h1 id="title">Charged Up Dashboard ⚡</h1>
+      <h1 id="title">Charged Up Dashboard ⚡ (Side: {side ? "Red" : "Blue"})</h1>
       <Stack direction="row" spacing={2}>
         <div>
-          <ConeOrCube piece={piece} />
-          <form>
-            <Stack direction="row">
-              <div className="radio">
-                <label>
-                  <input
-                    type="radio"
-                    value="Cone"
-                    checked={piece === "Cone"}
-                    onChange={handleCheck}
-                  />
-                  Cone
-                </label>
-              </div>
-              <div className="radio">
-                <label>
-                  <input
-                    type="radio"
-                    value="Cube"
-                    checked={piece === "Cube"}
-                    onChange={handleCheck}
-                  />
-                  Cube
-                </label>
-              </div>
-              <div className="radio">
-                <label>
-                  <input
-                    type="radio"
-                    value="None"
-                    checked={piece === "None"}
-                    onChange={handleCheck}
-                  />
-                  None
-                </label>
-              </div>
-            </Stack>
-          </form>
+          <ConeOrCube piece={numberToCubeOrCone(piece)} />
         </div>
-        <Table table={table} setTable={setTable} />
+        <Table table={splitArray<boolean>(table, 9)} bestNode={bestNode} />
       </Stack>
     </div>
   );
