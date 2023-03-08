@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./App.css";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -93,7 +93,7 @@ function App() {
   const sidePath: string = "/components/score_game_piece/state_" + (side ? "red" : "blue")
 
   const piece = useNTValue<number>(
-    "/components/gripper/get_current_piece_as_int",
+    "/components/gripper/current_piece_as_int",
     NetworkTablesTypeInfos.kInteger,
     0
   )
@@ -108,9 +108,11 @@ function App() {
     -1
   )
 
+  console.log(piece)
+
   return (
     <div className="App">
-      <h1 id="title">Charged Up Dashboard ⚡ (Side: {side ? "Red" : "Blue"})</h1>
+      <h1 id="title">Charged Up Dashboard ⚡ (Side: {side ? "Red" : "Blue"}) {piece}</h1>
       <Stack direction="row" spacing={2}>
         <div>
           <ConeOrCube piece={numberToCubeOrCone(piece)} />
